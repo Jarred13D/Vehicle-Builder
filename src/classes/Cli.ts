@@ -7,9 +7,9 @@ import Wheel from "./Wheel.js";
 
 // define the Cli class
 class Cli {
-  // TODO: update the vehicles property to accept Truck and Motorbike objects as well
-  // TODO: You will need to use the Union operator to define additional types for the array
-  // TODO: See the AbleToTow interface for an example of how to use the Union operator
+  // update the vehicles property to accept Truck and Motorbike objects as well
+  // You will need to use the Union operator to define additional types for the array
+  // See the AbleToTow interface for an example of how to use the Union operator
   vehicles: (Car | Truck | Motorbike)[];
   selectedVehicleVin: string | undefined;
   exit: boolean = false;
@@ -116,7 +116,7 @@ class Cli {
       ])
       .then((answers) => {
         const car = new Car(
-          // TODO: The generateVin method is static and should be called using the class name Cli, make sure to use Cli.generateVin() for creating a truck and motorbike as well!
+          // The generateVin method is static and should be called using the class name Cli, make sure to use Cli.generateVin() for creating a truck and motorbike as well!
           Cli.generateVin(),
           answers.color,
           answers.make,
@@ -271,15 +271,15 @@ class Cli {
         // Use the answers object to pass the required properties to the Motorbike constructor
         // push the motorbike to the vehicles array
         this.vehicles.push(motorbike);
-        // TODO: set the selectedVehicleVin to the vin of the motorbike
+        // set the selectedVehicleVin to the vin of the motorbike
         this.selectedVehicleVin = motorbike.vin;
-        // TODO: perform actions on the motorbike
+        // perform actions on the motorbike
         this.performActions();
       });
   }
 
   // method to find a vehicle to tow
-  // TODO: add a parameter to accept a truck object
+  // add a parameter to accept a truck object
   findVehicleToTow(truck: Truck): void {
     inquirer
       .prompt([
@@ -290,23 +290,23 @@ class Cli {
           choices: this.vehicles.map((vehicle) => {
             return {
               name: `${vehicle.vin} -- ${vehicle.make} ${vehicle.model}`,
-              value: vehicle,
+              value: vehicle.vin,
             };
           }),
         },
       ])
       .then((answers) => {
-        const selectedVehicle = answers.vehicleToTow;
-        // TODO: check if the selected vehicle is the truck
-        if (this.selectedVehicleVin === truck.vin) {
+        const selectedVehicleVin = answers.vehicleToTow;
+        if (selectedVehicleVin === truck.vin) {
           console.log('You cannot tow yourself!');
           this.performActions();
         } else {
-          truck.tow(selectedVehicle);
+          const selectedVehicle = this.vehicles.find(vehicle => vehicle.vin === selectedVehicleVin);
+          if (selectedVehicle) {
+            truck.tow(selectedVehicle);
+          }
           this.performActions();
         }
-        // TODO: if it is, log that the truck cannot tow itself then perform actions on the truck to allow the user to select another action
-        // TODO: if it is not, tow the selected vehicle then perform actions on the truck to allow the user to select another action
       });
   }
 
@@ -395,9 +395,12 @@ class Cli {
           }
         } else if (answers.action === 'Tow a vehicle') {
           for (let i = 0; i < this.vehicles.length; i++) {
-            if (this.vehicles[i].vin === this.selectedVehicleVin && this.vehicles[i] instanceof Truck) {
-              this.findVehicleToTow(this.vehicles[i] as Truck);
-              return; // return to avoid instantly calling the performActions method again
+            if (this.vehicles[i].vin === this.selectedVehicleVin) {
+              const selectedVehicle = this.vehicles[i];
+              if (selectedVehicle instanceof Truck) {
+                this.findVehicleToTow(selectedVehicle);
+                return; // return to avoid instantly calling the performActions method again
+              }
             }
           }
         } else if (answers.action === 'Do a Wheelie') {
