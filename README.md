@@ -49,3 +49,7 @@ An application that prompts the user to either create a new vehicle or select an
 3. Perform actions with the selected vehicle.
 4. View detailed information about the vehicle.
 5. Exit the application when done.
+
+## Walkthrough Guide
+
+https://app.screencastify.com/v3/watch/GL2XLo9E2Dv6WFlA8vQf
